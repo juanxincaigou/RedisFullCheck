@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"full_check/configure"
-	"full_check/full_check"
 	"full_check/checker"
 	"full_check/client"
 	"full_check/common"
+	"full_check/configure"
+	"full_check/full_check"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/gugemichael/nimo4go"
 )
 
 var VERSION = "$"
@@ -54,7 +53,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	nimo.Profiling(int(conf.Opts.SystemProfile))
+	//nimo.Profiling(int(conf.Opts.SystemProfile))
 
 	common.Logger, err = common.InitLog(conf.Opts.LogFile, logLevel)
 	if err != nil {
@@ -132,6 +131,20 @@ func main() {
 		common.Logger.Infof("filter list enabled: %v", filterList)
 	}
 
+	// block list
+	var blockTree *common.Trie
+	if len(conf.Opts.BlockList) != 0 {
+		blockTree = common.NewTrie()
+		blockList := strings.Split(conf.Opts.BlockList, "|")
+		for _, block := range blockList {
+			if block == "" {
+				panic(common.Logger.Errorf("invalid input block list: %v", blockList))
+			}
+			blockTree.Insert([]byte(block))
+		}
+		common.Logger.Infof("block list enabled: %v", blockList)
+	}
+
 	// remove result file if has
 	if len(conf.Opts.ResultFile) > 0 {
 		os.Remove(conf.Opts.ResultFile)
@@ -162,6 +175,7 @@ func main() {
 		BatchCount:   batchCount,
 		Parallel:     parallel,
 		FilterTree:   filterTree,
+		BlockTree:    blockTree,
 	}
 
 	common.Logger.Info("configuration: ", conf.Opts)
