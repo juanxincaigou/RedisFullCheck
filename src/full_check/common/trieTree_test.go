@@ -117,3 +117,26 @@ func TestCheckBlock(t *testing.T) {
 		assert.Equal(t, false, CheckBlock(trie, []byte("any_key")), "空 blocklist 匹配失败")
 	}
 }
+
+func TestTrieRegex(t *testing.T) {
+	var nr int
+
+	nr++
+	fmt.Printf("TestTrie case %d: 正则表达式匹配.\n", nr)
+
+	trie := NewTrie()
+	regexList := []string{"^test.*$", "^[0-9]+$", ".*end$"}
+	for _, element := range regexList {
+		trie.Insert([]byte(element))
+	}
+
+	// 匹配正则的
+	assert.Equal(t, true, trie.Search([]byte("test123")), "正则表达式匹配失败")
+	assert.Equal(t, true, trie.Search([]byte("12345")), "正则表达式匹配失败")
+	assert.Equal(t, true, trie.Search([]byte("this_is_the_end")), "正则表达式匹配失败")
+
+	// 不匹配正则的
+	assert.Equal(t, false, trie.Search([]byte("example")), "正则表达式匹配错误")
+	assert.Equal(t, false, trie.Search([]byte("abc123")), "正则表达式匹配错误")
+	assert.Equal(t, false, trie.Search([]byte("start_middle")), "正则表达式匹配错误")
+}
