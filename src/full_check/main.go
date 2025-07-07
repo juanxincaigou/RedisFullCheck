@@ -121,7 +121,7 @@ func main() {
 	var filterTree *common.Trie
 	if len(conf.Opts.FilterList) != 0 {
 		filterTree = common.NewTrie()
-		filterList := strings.Split(conf.Opts.FilterList, "|")
+		filterList := strings.Split(conf.Opts.FilterList, ";")
 		for _, filter := range filterList {
 			if filter == "" {
 				panic(common.Logger.Errorf("invalid input filter list: %v", filterList))
@@ -135,7 +135,7 @@ func main() {
 	var blockTree *common.Trie
 	if len(conf.Opts.BlockList) != 0 {
 		blockTree = common.NewTrie()
-		blockList := strings.Split(conf.Opts.BlockList, "|")
+		blockList := strings.Split(conf.Opts.BlockList, ";")
 		for _, block := range blockList {
 			if block == "" {
 				panic(common.Logger.Errorf("invalid input block list: %v", blockList))
